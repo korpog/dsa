@@ -1,5 +1,7 @@
 #include <iostream>
+#include <chrono>
 using namespace std;
+using namespace std::chrono;
 
 void merge(int arr[], int l, int m, int r)
 {
@@ -120,41 +122,45 @@ void selectionSort(int arr[], int n)
     }
 }
 
-void countingSort(int array[], int size, int place) {
+void countingSort(int array[], int size, int place)
+{
     const int max = 10;
     int output[size];
     int count[max];
 
-    for(int i = 0; i < max; ++i)
+    for (int i = 0; i < max; ++i)
         count[i] = 0;
 
-    for(int i = 0; i < size; i++)
-        count[(array[i]/place) % max]++;
+    for (int i = 0; i < size; i++)
+        count[(array[i] / place) % max]++;
 
-    for(int i = 1; i < max; i++)
+    for (int i = 1; i < max; i++)
         count[i] += count[i - 1];
 
-    for(int i = size - 1; i >= 0; i--) {
-        output[count[(array[i]/place) % max] - 1] = array[i];
-        count[(array[i]/place) % max]--;
+    for (int i = size - 1; i >= 0; i--)
+    {
+        output[count[(array[i] / place) % max] - 1] = array[i];
+        count[(array[i] / place) % max]--;
     }
 
-    for(int i = 0; i < size; i++)
+    for (int i = 0; i < size; i++)
         array[i] = output[i];
 }
 
-void radixSort(int array[], int size) {
+void radixSort(int array[], int size)
+{
     int max = array[0];
-    for(int i = 1; i < size; i++)
-        if(array[i] > max)
+    for (int i = 1; i < size; i++)
+        if (array[i] > max)
             max = array[i];
 
-    for(int place = 1; max/place > 0; place *= 10)
+    for (int place = 1; max / place > 0; place *= 10)
         countingSort(array, size, place);
 }
 
-void printArray(int array[], int size) {
-    for(int i = 0; i < size; i++)
+void printArray(int array[], int size)
+{
+    for (int i = 0; i < size; i++)
         cout << array[i] << " ";
     cout << endl;
 }
@@ -165,13 +171,20 @@ int main()
     int arr2[] = {121, 432, 564, 23, 1, 45, 788};
     int arr_size = sizeof(arr2) / sizeof(int);
 
-    //mergeSort(arr, 0, arr_size - 1);
-    // quickSort(arr, 0, arr_size - 1);
-    //insertionSort(arr2, arr_size - 1);
-    //selectionSort(arr2, arr_size);
-    radixSort(arr2, arr_size);
+    auto start = high_resolution_clock::now();
 
-    cout << "select sort: \n";
+    // mergeSort(arr, 0, arr_size - 1);
+    // quickSort(arr, 0, arr_size - 1);
+    // insertionSort(arr2, arr_size - 1);
+    // selectionSort(arr2, arr_size);
+    // radixSort(arr2, arr_size);
+
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+
+    cout << "radix sort: \n";
     printArray(arr2, arr_size);
+    cout << "Time taken by function: "
+         << duration.count() << " microseconds" << endl;
     return 0;
 }
