@@ -1,5 +1,7 @@
 #include <iostream>
 #include <chrono>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 using namespace std::chrono;
 
@@ -165,25 +167,41 @@ void printArray(int array[], int size)
     cout << endl;
 }
 
+void fillArray(int array[], int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        array[i] = rand();
+    }
+}
+
 int main()
 {
-    int arr[] = {12, 11, 13, 5, 6, 7};
-    int arr2[] = {121, 432, 564, 23, 1, 45, 788};
-    int arr_size = sizeof(arr2) / sizeof(int);
+    srand(static_cast<unsigned>(time(0)));
+
+    int n1 = 20;
+    int n2 = 10000;
+    int n3 = 100000;
+    int *arr1k = new int[n1];
+    int *arr10k = new int[n2];
+    int *arr100k = new int[n3];
+
+    fillArray(arr1k, n1);
+    printArray(arr1k, n1);
 
     auto start = high_resolution_clock::now();
 
-    // mergeSort(arr, 0, arr_size - 1);
-    // quickSort(arr, 0, arr_size - 1);
-    // insertionSort(arr2, arr_size - 1);
-    // selectionSort(arr2, arr_size);
+    mergeSort(arr1k, 0, n1);
+    // quickSort(arr1k, 0, n1 - 1);
+    // insertionSort(arr1k, n1);
+    // selectionSort(arr1k, n1);
     // radixSort(arr2, arr_size);
 
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
 
-    cout << "radix sort: \n";
-    printArray(arr2, arr_size);
+    cout << "insert sort: \n";
+    printArray(arr1k, n1);
     cout << "Time taken by function: "
          << duration.count() << " microseconds" << endl;
     return 0;
