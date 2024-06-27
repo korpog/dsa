@@ -212,11 +212,11 @@ int main()
 
     for (int i = 0; i < 30; i++)
     {
-        fillArrayDesc(arr10k, n2);
+        fillArrayDesc(arr100k, n3);
         //printArray(arr1k, n1);
 
         auto start = high_resolution_clock::now();
-        insertionSort(arr10k, n2);
+        radixSort(arr100k, n3);
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
         average[i] = duration.count();
