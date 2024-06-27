@@ -175,34 +175,67 @@ void fillArray(int array[], int size)
     }
 }
 
+void fillArrayAsc(int array[], int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        array[i] = i;
+    }
+}
+
+void fillArrayDesc(int array[], int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        array[i] = size - i;
+    }
+}
+
 int main()
 {
     srand(static_cast<unsigned>(time(0)));
 
-    int n1 = 20;
+    // mergeSort(arr1k, 0, n1);
+    // quickSort(arr1k, 0, n1 - 1);
+    // insertionSort(arr1k, n1);
+    // selectionSort(arr1k, n1);
+    // radixSort(arr1k, n1);
+
+    int n1 = 1000;
     int n2 = 10000;
     int n3 = 100000;
     int *arr1k = new int[n1];
     int *arr10k = new int[n2];
     int *arr100k = new int[n3];
 
-    fillArray(arr1k, n1);
-    printArray(arr1k, n1);
+    int *average = new int[30];
 
-    auto start = high_resolution_clock::now();
+    for (int i = 0; i < 30; i++)
+    {
+        fillArrayDesc(arr10k, n2);
+        //printArray(arr1k, n1);
 
-    mergeSort(arr1k, 0, n1);
-    // quickSort(arr1k, 0, n1 - 1);
-    // insertionSort(arr1k, n1);
-    // selectionSort(arr1k, n1);
-    // radixSort(arr2, arr_size);
+        auto start = high_resolution_clock::now();
+        insertionSort(arr10k, n2);
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        average[i] = duration.count();
 
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
+        cout << "Time taken by function: "
+             << duration.count() << " microseconds" << endl;
+    }
 
-    cout << "insert sort: \n";
-    printArray(arr1k, n1);
-    cout << "Time taken by function: "
-         << duration.count() << " microseconds" << endl;
+    int sum = 0;
+    for (int i = 0; i < 30; i++)
+    {
+        sum += average[i];
+    }
+    double avg = static_cast<double>(sum) / 30;
+
+    cout << "Average time taken by function: "
+         << avg << " microseconds" << endl;
+
+    //printArray(arr1k, n1);
+
     return 0;
 }
