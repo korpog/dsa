@@ -1,6 +1,10 @@
 #include <iostream>
 #include <algorithm>
+#include <queue>
+#include <chrono>
+#include <ctime>
 using namespace std;
+using namespace std::chrono;
 
 class BST
 {
@@ -35,6 +39,32 @@ private:
         inorder(node->right);
     }
 
+    void levelorder(Node *node)
+    {
+        if (node == nullptr)
+            return;
+
+        queue<Node *> q;
+        q.push(node);
+
+        while (!q.empty())
+        {
+            int levelSize = q.size();
+            for (int i = 0; i < levelSize; i++)
+            {
+                Node *node = q.front();
+                q.pop();
+                cout << node->data << " ";
+
+                if (node->left)
+                    q.push(node->left);
+                if (node->right)
+                    q.push(node->right);
+            }
+            cout << endl;
+        }
+    }
+
     Node *search(Node *node, int val)
     {
         if (node == nullptr || node->data == val)
@@ -55,6 +85,12 @@ public:
     void inorder()
     {
         inorder(root);
+        cout << endl;
+    }
+
+    void levelorder()
+    {
+        levelorder(root);
         cout << endl;
     }
 
@@ -123,27 +159,21 @@ private:
         else if (val > node->data)
             node->right = insert(node->right, val);
         else
-            return node; // Duplicate values not allowed
+            return node;
 
         node->height = 1 + max(height(node->left), height(node->right));
         int balance = balanceFactor(node);
-
-        // Left Left Case
         if (balance > 1 && val < node->left->data)
             return rightRotate(node);
 
-        // Right Right Case
         if (balance < -1 && val > node->right->data)
             return leftRotate(node);
-
-        // Left Right Case
         if (balance > 1 && val > node->left->data)
         {
             node->left = leftRotate(node->left);
             return rightRotate(node);
         }
 
-        // Right Left Case
         if (balance < -1 && val < node->right->data)
         {
             node->right = rightRotate(node->right);
@@ -160,6 +190,32 @@ private:
         inorder(node->left);
         cout << node->data << " ";
         inorder(node->right);
+    }
+
+    void levelorder(Node *node)
+    {
+        if (node == nullptr)
+            return;
+
+        queue<Node *> q;
+        q.push(node);
+
+        while (!q.empty())
+        {
+            int levelSize = q.size();
+            for (int i = 0; i < levelSize; i++)
+            {
+                Node *node = q.front();
+                q.pop();
+                cout << node->data << " ";
+
+                if (node->left)
+                    q.push(node->left);
+                if (node->right)
+                    q.push(node->right);
+            }
+            cout << endl;
+        }
     }
 
     Node *search(Node *node, int val)
@@ -185,6 +241,12 @@ public:
         cout << endl;
     }
 
+    void levelorder()
+    {
+        levelorder(root);
+        cout << endl;
+    }
+
     bool search(int val)
     {
         return search(root, val) != nullptr;
@@ -194,31 +256,62 @@ public:
 int main()
 {
     BST bst;
-    bst.insert(5);
-    bst.insert(3);
-    bst.insert(7);
-    bst.insert(1);
-    bst.insert(9);
+    AVLTree avl;
 
-    cout << "Inorder traversal: ";
-    bst.inorder();
+    srand(time(0));
+    int *average = new int[30];
+    int *nums = new int[30];
 
-    cout << "Search 7: " << (bst.search(7) ? "Found" : "Not Found") << endl;
-    cout << "Search 6: " << (bst.search(6) ? "Found" : "Not Found") << endl;
+    for (int i = 0; i < 30; i++)
+    {
+        auto start = high_resolution_clock::now();
 
-    // AVLTree avl;
-    // avl.insert(10);
-    // avl.insert(20);
-    // avl.insert(30);
-    // avl.insert(40);
-    // avl.insert(50);
-    // avl.insert(25);
+        // 1 - 100
+        // for (int i = 1; i <= 100; i++)
+        // {
+        //     avl.insert(i);
+        // }
 
-    // cout << "Inorder traversal of AVL tree: ";
-    // avl.inorder();
+        // 2-100, 1-99
+        // for (int i = 2; i <= 100; i += 2)
+        // {
+        //     bst.insert(i);
+        // }
+        // for (int i = 1; i < 100; i += 2)
+        // {
+        //     bst.insert(i);
+        // }
 
-    // cout << "Search 30: " << (avl.search(30) ? "Found" : "Not Found") << endl;
-    // cout << "Search 35: " << (avl.search(35) ? "Found" : "Not Found") << endl;
+        // 1- 20
+        for (int i = 0; i < 30; ++i)
+        {
+            int random = rand() % 20 + 1;
+            nums[i] = random;
+            avl.insert(random);
+        }
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        average[i] = duration.count();
+
+        cout << "Time taken by function: "
+             << duration.count() << " microseconds" << endl;
+    }
+
+    int sum = 0;
+    for (int i = 0; i < 30; i++)
+    {
+        sum += average[i];
+    }
+    double avg = static_cast<double>(sum) / 30;
+
+    cout << "Average time taken by function: "
+         << avg << " microseconds" << endl;
+
+    // cout << "Level order BST: \n";
+    // bst.levelorder();
+
+    cout << "Level order AVL: \n";
+    avl.levelorder();
 
     return 0;
 }
