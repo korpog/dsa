@@ -124,9 +124,9 @@ void selectionSort(int arr[], int n)
     }
 }
 
-void countingSort(int array[], int size, int place)
+void countingSort(int array[], int size, int place, int base)
 {
-    const int max = 10;
+    const int max = base;
     int output[size];
     int count[max];
 
@@ -149,7 +149,7 @@ void countingSort(int array[], int size, int place)
         array[i] = output[i];
 }
 
-void radixSort(int array[], int size)
+void radixSort(int array[], int size, int base)
 {
     int max = array[0];
     for (int i = 1; i < size; i++)
@@ -157,7 +157,7 @@ void radixSort(int array[], int size)
             max = array[i];
 
     for (int place = 1; max / place > 0; place *= 10)
-        countingSort(array, size, place);
+        countingSort(array, size, place, base);
 }
 
 void printArray(int array[], int size)
@@ -169,9 +169,21 @@ void printArray(int array[], int size)
 
 void fillArray(int array[], int size)
 {
+    srand(static_cast<unsigned>(time(0)));
+
     for (int i = 0; i < size; i++)
     {
         array[i] = rand();
+    }
+}
+
+void fillArrayHex(int array[], int size)
+{
+    srand(static_cast<unsigned>(time(0)));
+
+    for (int i = 0; i < size; i++)
+    {
+        array[i] = rand() % 0x100000000;
     }
 }
 
@@ -212,11 +224,11 @@ int main()
 
     for (int i = 0; i < 30; i++)
     {
-        fillArrayDesc(arr100k, n3);
-        //printArray(arr1k, n1);
+        fillArrayHex(arr100k, n3);
+        // printArray(arr1k, n1);
 
         auto start = high_resolution_clock::now();
-        radixSort(arr100k, n3);
+        radixSort(arr100k, n3, 16);
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
         average[i] = duration.count();
@@ -235,7 +247,7 @@ int main()
     cout << "Average time taken by function: "
          << avg << " microseconds" << endl;
 
-    //printArray(arr1k, n1);
+    delete[] arr100k;
 
     return 0;
 }
