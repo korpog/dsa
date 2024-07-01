@@ -292,6 +292,7 @@ int main()
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
         average[i] = duration.count();
+        avl.inorder();
 
         cout << "Time taken by function: "
              << duration.count() << " microseconds" << endl;
@@ -310,7 +311,14 @@ int main()
     // cout << "Level order BST: \n";
     // bst.levelorder();
 
-    cout << "Level order AVL: \n";
+    // cout << "Level order AVL: \n";
+    // avl.inorder();
+    // cout << endl;
+
+    for (int i = 0; i < 30; i++) {
+        cout << nums[i] << " ";
+    }
+
     avl.levelorder();
 
     return 0;
