@@ -1,106 +1,183 @@
-#include <iostream>
 #include <vector>
 #include <queue>
+#include <iostream>
+#include <chrono>
+#include <cstdlib>
+#include <ctime>
+#include <random>
 
-class Graph {
+using namespace std;
+using namespace std::chrono;
+
+class Graph
+{
 private:
-    int V; // number of vertices
-    std::vector<std::vector<int>> incidenceMatrix;
+    int V;
+    vector<vector<int>> incidenceMatrix;
 
 public:
-    Graph(int vertices) : V(vertices) {
-        incidenceMatrix.resize(V, std::vector<int>(V, 0));
+    Graph(int vertices) : V(vertices)
+    {
+        incidenceMatrix.resize(V, vector<int>(V, 0));
     }
 
-    void addEdge(int u, int v, int weight) {
+    void addEdge(int u, int v, int weight)
+    {
         incidenceMatrix[u][v] = weight;
     }
 
-    std::vector<int> topoSort() {
-        std::vector<int> inDegree(V, 0);
-        std::vector<int> result;
-        std::queue<int> q;
+    vector<int> topoSort()
+    {
+        vector<int> inDegree(V, 0);
+        vector<int> result;
+        queue<int> q;
 
-        // Calculate in-degree for each vertex
-        for (int i = 0; i < V; i++) {
-            for (int j = 0; j < V; j++) {
-                if (incidenceMatrix[i][j] != 0) {
+        for (int i = 0; i < V; i++)
+        {
+            for (int j = 0; j < V; j++)
+            {
+                if (incidenceMatrix[i][j] != 0)
+                {
                     inDegree[j]++;
                 }
             }
         }
 
-        // Enqueue vertices with in-degree 0
-        for (int i = 0; i < V; i++) {
-            if (inDegree[i] == 0) {
+        for (int i = 0; i < V; i++)
+        {
+            if (inDegree[i] == 0)
+            {
                 q.push(i);
             }
         }
 
-        while (!q.empty()) {
+        while (!q.empty())
+        {
             int u = q.front();
             q.pop();
             result.push_back(u);
 
-            // Reduce in-degree of adjacent vertices
-            for (int v = 0; v < V; v++) {
-                if (incidenceMatrix[u][v] != 0) {
-                    if (--inDegree[v] == 0) {
+            for (int v = 0; v < V; v++)
+            {
+                if (incidenceMatrix[u][v] != 0)
+                {
+                    if (--inDegree[v] == 0)
+                    {
                         q.push(v);
                     }
                 }
             }
         }
 
-        if (result.size() != V) {
-            std::cout << "Graph contains a cycle." << std::endl;
+        if (result.size() != V)
+        {
+            cout << "Graph contains a cycle." << endl;
             return {};
         }
 
         return result;
     }
 
-    void DFS(int v, std::vector<bool>& visited) {
+    void DFS(int v, vector<bool> &visited)
+    {
         visited[v] = true;
-        std::cout << v << " ";
+        cout << v << " ";
 
-        for (int i = 0; i < V; i++) {
-            if (incidenceMatrix[v][i] != 0 && !visited[i]) {
+        for (int i = 0; i < V; i++)
+        {
+            if (incidenceMatrix[v][i] != 0 && !visited[i])
+            {
                 DFS(i, visited);
             }
         }
     }
 
-    void DFSTraversal() {
-        std::vector<bool> visited(V, false);
+    void DFSTraversal()
+    {
+        vector<bool> visited(V, false);
 
-        for (int i = 0; i < V; i++) {
-            if (!visited[i]) {
+        for (int i = 0; i < V; i++)
+        {
+            if (!visited[i])
+            {
                 DFS(i, visited);
             }
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 };
 
-int main() {
-    Graph g(6);
-    g.addEdge(5, 2, 1);
-    g.addEdge(5, 0, 1);
-    g.addEdge(4, 0, 1);
-    g.addEdge(4, 1, 1);
-    g.addEdge(2, 3, 1);
-    g.addEdge(3, 1, 1);
+Graph generateRandomGraph(int V)
+{
+    Graph g(V);
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(0, 99);
 
-    std::cout << "Topological Sort: ";
-    std::vector<int> topo = g.topoSort();
-    for (int v : topo) {
-        std::cout << v << " ";
+    for (int i = 0; i < V; i++)
+    {
+        for (int j = i + 1; j < V; j++)
+        {
+            if (dis(gen) < 30)
+            {
+                g.addEdge(i, j, 1);
+            }
+        }
     }
-    std::cout << std::endl;
+    return g;
+}
 
-    std::cout << "DFS Traversal: ";
-    g.DFSTraversal();
+Graph generateGraphWithCycle(int V)
+{
+    Graph g = generateRandomGraph(V);
+    g.addEdge(V - 1, 0, 1);
+    return g;
+}
+
+int main()
+{
+    Graph g10 = generateRandomGraph(10);
+    Graph g20 = generateRandomGraph(20);
+
+    Graph g10c = generateGraphWithCycle(10);
+    Graph g20c = generateGraphWithCycle(20);
+
+    int *average = new int[30];
+
+    for (int i = 0; i < 30; i++)
+    {
+
+        auto start = high_resolution_clock::now();
+
+        // cout << "Topological Sort: ";
+
+        vector<int> topo = g10c.topoSort();
+        // for (int v : topo)
+        // {
+        //     cout << v << " ";
+        // }
+        // cout << endl;
+
+        // cout << "DFS Traversal: ";
+        // g10.DFSTraversal();
+
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        average[i] = duration.count();
+
+        cout << "Time taken by function: "
+             << duration.count() << " microseconds" << endl;
+    }
+
+    int sum = 0;
+    for (int i = 0; i < 30; i++)
+    {
+        sum += average[i];
+    }
+    double avg = static_cast<double>(sum) / 30;
+
+    cout << "Average time taken by function: "
+         << avg << " microseconds" << endl;
 
     return 0;
 }
